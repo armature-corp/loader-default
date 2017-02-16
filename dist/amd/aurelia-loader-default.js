@@ -110,6 +110,16 @@ define(['exports', 'aurelia-loader', 'aurelia-pal', 'aurelia-metadata'], functio
     };
 
     DefaultLoader.prototype.loadTemplate = function loadTemplate(url) {
+      var index = url.indexOf('!');
+      if (index) {
+        var parts = url.split('!');
+        url = parts[0];
+
+        if (parts[1]) {
+          url = url + parts[1].substring(parts[1].indexOf('.'));
+        }
+      }
+
       return this._import(this.applyPluginToUrl(url, 'template-registry-entry'));
     };
 
@@ -225,7 +235,9 @@ define(['exports', 'aurelia-loader', 'aurelia-pal', 'aurelia-metadata'], functio
     };
 
     DefaultLoader.prototype.map = function (id, source) {
-      System.map[id] = source;
+      var _map;
+
+      System.config({ map: (_map = {}, _map[id] = source, _map) });
     };
 
     DefaultLoader.prototype.normalizeSync = function (moduleId, relativeTo) {

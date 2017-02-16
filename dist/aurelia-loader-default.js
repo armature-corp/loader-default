@@ -112,6 +112,17 @@ export class DefaultLoader extends Loader {
   * @return A Promise for a TemplateRegistryEntry containing the template.
   */
   loadTemplate(url: string): Promise<TemplateRegistryEntry> {
+    /* ignore other systemjs plugins */
+    let index = url.indexOf('!');
+    if( index ) {
+      let parts = url.split('!');
+      url = parts[0];
+
+      if( parts[1] ) {
+          url = url + parts[1].substring( parts[1].indexOf('.') );
+      }
+    }
+
     return this._import(this.applyPluginToUrl(url, 'template-registry-entry'));
   }
 
@@ -235,7 +246,7 @@ if (!PLATFORM.global.System || !PLATFORM.global.System.import) {
   };
 
   DefaultLoader.prototype.map = function(id, source) {
-    System.map[id] = source;
+    System.config({ map: { [id]: source } });
   };
 
   DefaultLoader.prototype.normalizeSync = function(moduleId, relativeTo) {
